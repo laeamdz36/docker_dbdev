@@ -2,9 +2,7 @@ name: dbdev
 
 services:
   mysql:
-    build:
-      context: .
-    dockerfile: dockerfile
+    image: mysql:8.4
     container_name: mysql-dev
     restart: unless-stopped
     environment:

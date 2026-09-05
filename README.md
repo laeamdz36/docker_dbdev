@@ -8,4 +8,8 @@
 
 # Development - MySQL
 
+Run docker compose for mysql project:
 
+```bash
+docker compose -f mysql/docker-compose.yml up -d --build
+```
