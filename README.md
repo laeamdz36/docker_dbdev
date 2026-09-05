@@ -36,6 +36,8 @@ bash setup.sh
 
 El script pregunta los valores de los secrets y de `.env`, crea los directorios,
 establece permisos restrictivos y ofrece validar la configuración y arrancar MongoDB.
+También configura Mongo Express, disponible en `http://localhost:8081`, protegido
+con las mismas credenciales root almacenadas como secrets.
 
 ## Configurar los secrets
 

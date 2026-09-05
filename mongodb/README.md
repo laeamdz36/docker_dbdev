@@ -9,9 +9,9 @@ bash setup.sh
 ```
 
 El script solicita el usuario y la contraseña root, la versión de MongoDB, el puerto,
-el nombre del contenedor, el volumen, el proyecto Compose y la base de datos. La
-contraseña se solicita sin mostrarla en la consola. Al final permite validar la
-configuración y arrancar el contenedor.
+el nombre del contenedor, el volumen, el proyecto Compose, la base de datos y las
+opciones de Mongo Express. Las contraseñas se solicitan sin mostrarlas en la consola.
+Al final permite validar la configuración y arrancar ambos contenedores.
 
 También puedes consultar la ayuda:
 
@@ -26,7 +26,9 @@ Copy-Item .env.example .env
 docker compose --env-file .env up -d
 ```
 
-Los secretos locales se encuentran en `secrets/` y no se versionan. Para otro entorno,
+Los secretos locales se encuentran en `secrets/` y no se versionan. El script crea
+`mongo_express_mongodb_url` automáticamente a partir de las credenciales root para
+que Mongo Express pueda conectarse sin exponerlas en `.env`. Para otro entorno,
 copia las plantillas `.example` y sustituye sus valores antes de arrancar el contenedor.
 
 ## Opciones configurables
@@ -39,6 +41,15 @@ Edita `.env` para cambiar:
 - `MONGO_HOST_PORT`: puerto publicado en el host.
 - `MONGO_VOLUME_NAME`: volumen donde se conserva `/data/db`.
 - `MONGO_DATABASE`: base inicial usada por la imagen al inicializar el volumen.
+- `MONGO_EXPRESS_IMAGE_TAG`: versión de Mongo Express.
+- `MONGO_EXPRESS_CONTAINER_NAME`: nombre del contenedor de la interfaz web.
+- `MONGO_EXPRESS_HOST_PORT`: puerto web publicado, por defecto `8081`.
+- `MONGO_EXPRESS_COOKIE_SECRET`: secret para cookies de sesión.
+- `MONGO_EXPRESS_SESSION_SECRET`: secret para sesiones web.
+
+Mongo Express queda disponible en `http://localhost:8081` y utiliza el usuario y la
+contraseña root de MongoDB para el acceso web. Sus credenciales y la URL interna de
+MongoDB se montan desde `secrets/`; no se guardan en `.env`.
 
 Para crear otra instancia en paralelo, usa otro `.env`, cambia al menos
 `COMPOSE_PROJECT_NAME`, `MONGO_CONTAINER_NAME`, `MONGO_HOST_PORT` y
