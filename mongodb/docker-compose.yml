@@ -11,6 +11,10 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-app}
     ports:
       - "${MONGO_HOST_PORT:-27017}:27017"
+    networks:
+      default:
+        aliases:
+          - mongo
     volumes:
       - mongodb_data:/data/db
     secrets:
@@ -36,6 +40,8 @@ services:
       mongodb:
         condition: service_healthy
     environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: "27017"
       ME_CONFIG_MONGODB_URL_FILE: /run/secrets/mongo_express_mongodb_url
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
       ME_CONFIG_BASICAUTH_ENABLED: "true"

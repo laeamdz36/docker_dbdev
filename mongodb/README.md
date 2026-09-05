@@ -61,7 +61,9 @@ Edita `.env` para cambiar:
 
 Mongo Express queda disponible en `http://localhost:8081` y utiliza el usuario y la
 contraseña root de MongoDB para el acceso web. Sus credenciales y la URL interna de
-MongoDB se montan desde `secrets/`; no se guardan en `.env`.
+MongoDB se montan desde `secrets/`; no se guardan en `.env`. El compose define tanto
+el servicio `mongodb` como el alias de red `mongo`, porque algunas versiones de la
+imagen `mongo-express` usan `mongo:27017` durante su arranque.
 
 Para crear otra instancia en paralelo, usa otro `.env`, cambia al menos
 `COMPOSE_PROJECT_NAME`, `MONGO_CONTAINER_NAME`, `MONGO_HOST_PORT` y
