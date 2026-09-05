@@ -73,7 +73,8 @@ write_secret() {
   local value="$2"
 
   printf '%s\n' "${value}" > "${path}"
-  chmod 600 "${path}"
+  # Docker Compose local monta el archivo conservando sus permisos del host.
+  chmod 644 "${path}"
 }
 
 [[ "${1:-}" != "--help" ]] || { print_usage; exit 0; }
@@ -83,7 +84,7 @@ printf '%s\n' 'Configuración interactiva de MongoDB'
 printf '%s\n\n' "Los archivos se crearán en ${SCRIPT_DIR}."
 
 mkdir -p "${SECRETS_DIR}"
-chmod 700 "${SECRETS_DIR}"
+chmod 755 "${SECRETS_DIR}"
 
 if [[ -e "${ENV_FILE}" || -e "${SECRETS_DIR}/mongo_root_username" || -e "${SECRETS_DIR}/mongo_root_password" ]]; then
   confirm 'Ya existe una configuración. ¿Deseas sobrescribirla?' || {

@@ -26,10 +26,22 @@ Copy-Item .env.example .env
 docker compose --env-file .env up -d
 ```
 
-Los secretos locales se encuentran en `secrets/` y no se versionan. El script crea
+Los secretos locales se encuentran en `secrets/` y no se versionan. Como este compose
+usa archivos locales para implementar Docker secrets, el script aplica permisos `644`
+a los archivos para que el proceso dentro del contenedor pueda leerlos. El script crea
 `mongo_express_mongodb_url` automáticamente a partir de las credenciales root para
 que Mongo Express pueda conectarse sin exponerlas en `.env`. Para otro entorno,
 copia las plantillas `.example` y sustituye sus valores antes de arrancar el contenedor.
+
+Si ya ejecutaste una versión anterior del script y aparece `Permission denied`, corrige
+los permisos y recrea los contenedores:
+
+```bash
+chmod 755 secrets
+chmod 644 secrets/mongo_root_username secrets/mongo_root_password secrets/mongo_express_mongodb_url
+docker compose --env-file .env down
+docker compose --env-file .env up -d --force-recreate
+```
 
 ## Opciones configurables
 

@@ -35,9 +35,14 @@ bash setup.sh
 ```
 
 El script pregunta los valores de los secrets y de `.env`, crea los directorios,
-establece permisos restrictivos y ofrece validar la configuración y arrancar MongoDB.
+establece los permisos necesarios y ofrece validar la configuración y arrancar MongoDB.
 También configura Mongo Express, disponible en `http://localhost:8081`, protegido
 con las mismas credenciales root almacenadas como secrets.
+
+En Docker Compose local los secrets se montan desde archivos del host. Por eso el
+script deja los archivos de `secrets/` con permisos `644`, necesarios para que los
+procesos de los contenedores puedan leerlos. En Docker Swarm se pueden usar secrets
+nativos con permisos más restrictivos.
 
 ## Configurar los secrets
 
