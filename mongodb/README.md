@@ -65,6 +65,20 @@ MongoDB se montan desde `secrets/`; no se guardan en `.env`. El compose define t
 el servicio `mongodb` como el alias de red `mongo`, porque algunas versiones de la
 imagen `mongo-express` usan `mongo:27017` durante su arranque.
 
+La imagen `mongo-express:1.0.2` puede ignorar las variables `_FILE` para la URL y
+las credenciales. Por eso el compose lee explícitamente esos secrets al iniciar y
+exporta `ME_CONFIG_MONGODB_URL`, `ME_CONFIG_BASICAUTH_USERNAME` y
+`ME_CONFIG_BASICAUTH_PASSWORD` antes de ejecutar la aplicación.
+
+Si MongoDB aparece como `healthy` pero Mongo Express muestra `listDatabases requires
+authentication`, recrea solo el servicio web para aplicar la configuración:
+
+```bash
+docker compose --env-file .env up -d --force-recreate mongo-express
+docker compose --env-file .env ps
+docker compose --env-file .env logs mongo-express
+```
+
 Para crear otra instancia en paralelo, usa otro `.env`, cambia al menos
 `COMPOSE_PROJECT_NAME`, `MONGO_CONTAINER_NAME`, `MONGO_HOST_PORT` y
 `MONGO_VOLUME_NAME`, y arranca el mismo compose con ese archivo.

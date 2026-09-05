@@ -42,13 +42,18 @@ services:
     environment:
       ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_MONGODB_PORT: "27017"
-      ME_CONFIG_MONGODB_URL_FILE: /run/secrets/mongo_express_mongodb_url
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
       ME_CONFIG_BASICAUTH_ENABLED: "true"
-      ME_CONFIG_BASICAUTH_USERNAME_FILE: /run/secrets/mongo_root_username
-      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_root_password
       ME_CONFIG_SITE_COOKIESECRET: ${MONGO_EXPRESS_COOKIE_SECRET:-change-this-cookie-secret}
       ME_CONFIG_SITE_SESSIONSECRET: ${MONGO_EXPRESS_SESSION_SECRET:-change-this-session-secret}
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        export ME_CONFIG_MONGODB_URL="$$(cat /run/secrets/mongo_express_mongodb_url)"
+        ME_CONFIG_BASICAUTH_USERNAME="$$(cat /run/secrets/mongo_root_username)"
+        ME_CONFIG_BASICAUTH_PASSWORD="$$(cat /run/secrets/mongo_root_password)";
+        exec node app.js
     ports:
       - "${MONGO_EXPRESS_HOST_PORT:-8081}:8081"
     secrets:
