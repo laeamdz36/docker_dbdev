@@ -1,0 +1,39 @@
+name: ${COMPOSE_PROJECT_NAME:-mongodb-dev}
+
+services:
+  mongodb:
+    image: mongo:${MONGO_IMAGE_TAG:-8.0}
+    container_name: ${MONGO_CONTAINER_NAME:-mongodb-dev}
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-app}
+    ports:
+      - "${MONGO_HOST_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+    secrets:
+      - mongo_root_username
+      - mongo_root_password
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --host 127.0.0.1 --username "$$(cat /run/secrets/mongo_root_username)"
+          --password "$$(cat /run/secrets/mongo_root_password)" --authenticationDatabase admin
+          --eval "db.adminCommand('ping').ok" | grep 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  mongodb_data:
+    name: ${MONGO_VOLUME_NAME:-mongodb_data}
+
+secrets:
+  mongo_root_username:
+    file: ./secrets/mongo_root_username
+  mongo_root_password:
+    file: ./secrets/mongo_root_password
