@@ -1,56 +1,49 @@
-name: ${COMPOSE_PROJECT_NAME:-mongodb-dev}
+name: mongodb-dev
 
 services:
   mongodb:
-    image: mongo:${MONGO_IMAGE_TAG:-8.0}
-    container_name: ${MONGO_CONTAINER_NAME:-mongodb-dev}
+    image: mongo:8.0
+    container_name: mongodb-dev
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-app}
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: app
     ports:
-      - "${MONGO_HOST_PORT:-27017}:27017"
+      - "27017:27017"
     networks:
       default:
         aliases:
           - mongo
     volumes:
       - mongodb_data:/data/db
-    secrets:
-      - mongo_root_username
-      - mongo_root_password
     healthcheck:
       test:
         - CMD-SHELL
         - >-
-          mongosh --quiet --host 127.0.0.1 --username "$$(cat /run/secrets/mongo_root_username)" --password "$$(cat /run/secrets/mongo_root_password)" --authenticationDatabase admin --eval "db.adminCommand('ping').ok" | grep 1
+          mongosh --quiet --host 127.0.0.1 --username admin --password password --authenticationDatabase admin --eval "db.adminCommand('ping').ok" | grep 1
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
 
   mongo-express:
-    image: mongo-express:${MONGO_EXPRESS_IMAGE_TAG:-1.0.2}
-    container_name: ${MONGO_EXPRESS_CONTAINER_NAME:-mongo-express-dev}
+    image: mongo-express:1.0.2
+    container_name: mongo-express-dev
     restart: unless-stopped
     depends_on:
       mongodb:
         condition: service_healthy
     environment:
-      ME_CONFIG_MONGODB_URL_FILE: /run/secrets/mongo_express_mongodb_url
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/?authSource=admin
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
       ME_CONFIG_BASICAUTH_ENABLED: "true"
-      ME_CONFIG_BASICAUTH_USERNAME_FILE: /run/secrets/mongo_root_username
-      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_root_password
-      ME_CONFIG_SITE_COOKIESECRET: ${MONGO_EXPRESS_COOKIE_SECRET:-change-this-cookie-secret}
-      ME_CONFIG_SITE_SESSIONSECRET: ${MONGO_EXPRESS_SESSION_SECRET:-change-this-session-secret}
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+      ME_CONFIG_SITE_COOKIESECRET: change-this-cookie-secret
+      ME_CONFIG_SITE_SESSIONSECRET: change-this-session-secret
     ports:
-      - "${MONGO_EXPRESS_HOST_PORT:-8081}:8081"
-    secrets:
-      - mongo_express_mongodb_url
-      - mongo_root_username
-      - mongo_root_password
+      - "8081:8081"
     healthcheck:
       test: [ "CMD-SHELL", "wget --spider --quiet http://127.0.0.1:8081/status || exit 1" ]
       interval: 10s
@@ -60,12 +53,4 @@ services:
 
 volumes:
   mongodb_data:
-    name: ${MONGO_VOLUME_NAME:-mongodb_data}
-
-secrets:
-  mongo_root_username:
-    file: ./secrets/mongo_root_username.txt
-  mongo_root_password:
-    file: ./secrets/mongo_root_password.txt
-  mongo_express_mongodb_url:
-    file: ./secrets/mongo_express_mongodb_url.txt
+    name: mongodb_data

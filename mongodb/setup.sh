@@ -36,12 +36,19 @@ prompt_value() {
 
 prompt_secret() {
   local label="$1"
+  local default_value="${2:-}"
   local value
   local confirmation
 
   while true; do
-    read -r -s -p "${label}: " value
-    printf '\n' >&2
+    if [[ -n "${default_value}" ]]; then
+      read -r -s -p "${label} [${default_value}]: " value
+      printf '\n' >&2
+      value="${value:-${default_value}}"
+    else
+      read -r -s -p "${label}: " value
+      printf '\n' >&2
+    fi
     [[ -n "${value}" ]] || { printf 'El valor no puede estar vacío.\n' >&2; continue; }
     read -r -s -p "Repite ${label}: " confirmation
     printf '\n' >&2
@@ -95,7 +102,7 @@ fi
 
 printf '%s\n' 'Secrets de MongoDB (la contraseña no se mostrará)'
 mongo_root_username="$(prompt_value 'Usuario root' 'admin')"
-mongo_root_password="$(prompt_secret 'Contraseña root')"
+mongo_root_password="$(prompt_secret 'Contraseña root' 'password')"
 
 printf '\n%s\n' 'Configuración de Compose'
 compose_project_name="$(prompt_value 'Nombre del proyecto Compose' 'mongodb-dev')"
