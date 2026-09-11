@@ -64,8 +64,8 @@ volumes:
 
 secrets:
   mongo_root_username:
-    file: ./secrets/mongo_root_username
+    file: ./secrets/mongo_root_username.txt
   mongo_root_password:
-    file: ./secrets/mongo_root_password
+    file: ./secrets/mongo_root_password.txt
   mongo_express_mongodb_url:
-    file: ./secrets/mongo_express_mongodb_url
+    file: ./secrets/mongo_express_mongodb_url.txt
