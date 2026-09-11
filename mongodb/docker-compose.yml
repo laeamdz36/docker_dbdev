@@ -38,10 +38,8 @@ services:
       mongodb:
         condition: service_healthy
     environment:
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_PORT: "27017"
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
       ME_CONFIG_MONGODB_URL_FILE: /run/secrets/mongo_express_mongodb_url
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
       ME_CONFIG_BASICAUTH_ENABLED: "true"
       ME_CONFIG_BASICAUTH_USERNAME_FILE: /run/secrets/mongo_root_username
       ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_root_password

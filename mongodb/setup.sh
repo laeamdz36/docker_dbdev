@@ -72,7 +72,7 @@ write_secret() {
   local path="$1"
   local value="$2"
 
-  printf '%s\n' "${value}" > "${path}"
+  printf '%s' "${value}" > "${path}"
   # Docker Compose local monta el archivo conservando sus permisos del host.
   chmod 644 "${path}"
 }
